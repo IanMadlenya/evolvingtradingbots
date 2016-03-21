@@ -17,6 +17,7 @@ The /data folder contains historical data organized by the bar size.
 - Proposal 4/7
 - in proposal talk about how data cannot be distributed because it may violte TOS.  
 - 
+
 ## TO DO:
--get data 2 years worth of one future
--literature search
+- get data 2 years worth of one future
+- literature search
