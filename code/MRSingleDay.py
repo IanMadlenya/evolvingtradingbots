@@ -9,6 +9,7 @@ from Tools import average_true_range, snf, test_fixed_stop_target, test_fixed_ba
 
 DATA_DIR = "/Users/peterharrington/Documents/GitHub/evolvingtradingbots/data/min/"
 
+
 class MRSingleDay():
     def __init__(self, fn, a, b):
         self.a = a             # paramater to scale the ATR
@@ -39,15 +40,11 @@ class MRSingleDay():
         self.df.loc[high_triggered, "position"] = 1.0
         entries = num_high_entries + num_low_entries
 
-        self.df["daily_returns"] = self.df["Adj Close"] - self.df["Adj Close"].shift(1)
+        self.df["period_returns"] = self.df["Adj Close"] - self.df["Adj Close"].shift(1)
 
         # now here we can calculate the exit based on different strategies
-        test_fixed_stop_target(self.df)  # TODO: make these return a common performance struct
-        test_fixed_bar_exit(self.df)
-
-
-        print "fin"
-
+        return test_fixed_stop_target(self.df)  # may want to pass this function in, in a functional way
+        #return test_fixed_bar_exit(self.df)
 
 
 if __name__ == '__main__':

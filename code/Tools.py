@@ -1,5 +1,6 @@
 import pandas as pd
 from pandas.stats.moments import rolling_mean
+from Models.TradeResults import TradeResults
 
 
 # Original code of inefficient version: http://www.gbquant.com/?p=9
@@ -23,10 +24,11 @@ def snf(df):
     """shift and fill, used to delay logical trading signals"""
     return df.shift(1).fillna(False)
 
+
 def test_fixed_stop_target(df_i):
 
-    target_p = 20.0
-    target_n = -1.0 * target_p
+    target_p = 20.0                 # profit target adjustable
+    target_n = -1.0 * target_p      # loss target
 
     trade_return = 0.0
     in_position = False
@@ -38,7 +40,7 @@ def test_fixed_stop_target(df_i):
         if in_position: # it doesn't matter what the current position was, carry forward prev position
             pos = df_i.ix[i - 1, "position"]
             df_i.ix[i, "position"] = pos
-            trade_return += pos * df_i.ix[i, "daily_returns"]
+            trade_return += pos * df_i.ix[i, "period_returns"]
             if trade_return > target_p:
                 in_position = False
                 trade_return = 0.0
@@ -52,11 +54,9 @@ def test_fixed_stop_target(df_i):
                 in_position = True
 
     # now total return is simply pos * returns
-    profit = df_i["position"] * df_i["daily_returns"]
+    profit = df_i["position"] * df_i["period_returns"]
     t_profit = profit.sum()
-    print "fixed stops tests, winning: {}, loosing: {}, profit: {}".format(winning_trades,
-                                                                           loosing_trades, t_profit)
-    return winning_trades/float(loosing_trades), t_profit
+    return TradeResults(winning_trades, loosing_trades, t_profit)
 
 
 # exit after N bars, this just demonstrates that the entry is good
@@ -75,9 +75,9 @@ def test_fixed_bar_exit(df_i):
         if in_position: # it doesn't matter what the current position was, carry forward prev position
             pos = df_i.ix[i - 1, "position"]
             df_i.ix[i, "position"] = pos
-            trade_return += pos * df_i.ix[i, "daily_returns"]
+            trade_return += pos * df_i.ix[i, "period_returns"]
             bar_count += 1
-            #print "i:", i , " bar_count:" , bar_count
+
             if bar_count > max_bars:
                 if trade_return > 0.0:
                     winning_trades += 1
@@ -91,8 +91,6 @@ def test_fixed_bar_exit(df_i):
                 in_position = True
 
     # now total return is simply pos * returns
-    profit = df_i["position"] * df_i["daily_returns"]
+    profit = df_i["position"] * df_i["period_returns"]
     t_profit = profit.sum()
-    print "fixed bars tests, winning: {}, loosing: {}, profit: {}".format(winning_trades,
-                                                                           loosing_trades, t_profit)
-    return winning_trades/float(loosing_trades), t_profit
+    return TradeResults(winning_trades, loosing_trades, t_profit)
