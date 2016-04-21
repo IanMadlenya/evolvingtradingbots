@@ -5,7 +5,7 @@ strategy.
 
 import pandas as pd
 from pandas.stats.moments import rolling_mean
-from Tools import average_true_range, snf
+from Tools import average_true_range, snf, test_fixed_stop_target, test_fixed_bar_exit
 
 DATA_DIR = "/Users/peterharrington/Documents/GitHub/evolvingtradingbots/data/min/"
 
@@ -42,6 +42,9 @@ class MRSingleDay():
         self.df["daily_returns"] = self.df["Adj Close"] - self.df["Adj Close"].shift(1)
 
         # now here we can calculate the exit based on different strategies
+        test_fixed_stop_target(self.df)  # TODO: make these return a common performance struct
+        test_fixed_bar_exit(self.df)
+
 
         print "fin"
 
