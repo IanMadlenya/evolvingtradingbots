@@ -25,10 +25,10 @@ def snf(df):
     return df.shift(1).fillna(False)
 
 
-def test_fixed_stop_target(df_i):
+def test_fixed_stop_target(df_i, target_p, target_n):
 
-    target_p = 20.0                 # profit target adjustable
-    target_n = -1.0 * target_p      # loss target
+    #target_p = 20.0                 # profit target adjustable
+    #target_n = -1.0 * target_p      # loss target
 
     trade_return = 0.0
     in_position = False

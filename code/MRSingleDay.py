@@ -11,9 +11,11 @@ DATA_DIR = "/Users/peterharrington/Documents/GitHub/evolvingtradingbots/data/min
 
 
 class MRSingleDay():
-    def __init__(self, fn, a, b):
+    def __init__(self, fn, a, b, tar_p, tar_n):
         self.a = a             # paramater to scale the ATR
         self.mean_days = b     # number of days over which to take the mean
+        self.tar_p = tar_p     # profit target
+        self.tar_n = tar_n     # stop loss
         self.df = pd.read_csv(DATA_DIR + fn, index_col='Date', parse_dates=True, na_values=['nan'])
 
     def calc_returns(self):
@@ -43,7 +45,8 @@ class MRSingleDay():
         self.df["period_returns"] = self.df["Adj Close"] - self.df["Adj Close"].shift(1)
 
         # now here we can calculate the exit based on different strategies
-        return test_fixed_stop_target(self.df)  # may want to pass this function in, in a functional way
+        # may want to pass this function in, in a functional way
+        return test_fixed_stop_target(self.df, self.tar_p, self.tar_n)
         #return test_fixed_bar_exit(self.df)
 
 
