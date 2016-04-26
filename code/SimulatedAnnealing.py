@@ -1,5 +1,6 @@
 
 from MRSingleDay import MRSingleDay
+from FileIndexer import FileIndexer
 
 import numpy as np
 
@@ -19,33 +20,17 @@ from datetime import datetime
 from datetime import timedelta as td
 
 if __name__ == '__main__':
-
-	def getFileDate(fileName):
-		rDate = fileName.replace('.', '_').split('_')[1]
-		return datetime.strptime(rDate, "%Y%m%d")
-	v_getFileDate = np.vectorize(getFileDate)
-	
 	def modifyParameters(scalingParameter, meanDays):
-		return (np.max((scalingParameter + np.random.normal()), 0.1), meanDays + np.random.randint(-1, 2))
+		modScalingParameter = np.max((scalingParameter + np.random.normal()), 0.1)
+		modMeanDays = np.maximum((meanDays + np.random.randint(-1, 2)), 1)
+		return (modScalingParameter, modMeanDays)
 
-	def getFileFromDate(d):
-		r = datetime(2014,4,1)
-		return "ZS201605_{0:04d}{1:02d}{2:02d}.csv".format(d.year, d.month, d.day)
-	v_getFileFromDate = np.vectorize(getFileFromDate)
-
-	def getFilesForPeriod(minuteFiles, start, end):
-		#print "start: ", start, " end: ", end
-		fileDates = v_getFileDate(minuteFiles)
-		filesForPeriod = fileDates[(fileDates >= start) & (fileDates <= end)]
-		#print "Files For Period: ", v_getFileFromDate(filesForPeriod)
-		return v_getFileFromDate(filesForPeriod)
-		
-	def simulatedAnnealing(evalDate, initialMeanDays, initialScalingParameter, profitTarget, stopLoss, initTemp, thermostat, maxIter, reannealing):
+	def simulatedAnnealing(currentFileName, initialMeanDays, initialScalingParameter, profitTarget, stopLoss, initTemp, thermostat, maxIter, reannealing):
 		scores = []
 		maxScores = []
 		temperature = initTemp
 		it = 0
-		currentFileName = getFileFromDate(evalDate)
+		
 		print "Current File Name: ", currentFileName
 		
 		scalingParameter = initialScalingParameter
@@ -104,23 +89,43 @@ if __name__ == '__main__':
 				break
 				
 		return maxScore, maxScores, maxParams
-		
-		
-	d = MRSingleDay("ZS201605_20160314.csv", 0.8, 4, 2, -5)
-	ro = d.calc_returns()
-	print "winning: {}, loosing: {}, profit: {}".format(ro.num_win, ro.num_loose, ro.cum_ret)
 	
-	evalDate = datetime(2016,3,14)
-#ZS201605_20160314.csv
-	initialMeanDays = 4
-	initialScalingParameter = 0.8
-	profitTarget = 2
-	stopLoss = -5
-	initTemp = 2
-	thermostat = 0.95
-	maxIter = 30
-	reannealing = 10
-	simulatedAnnealing(evalDate, initialMeanDays, initialScalingParameter, profitTarget, stopLoss, initTemp, thermostat, maxIter, reannealing)
+
+	
+	def runSimulatedAnnealing(fileName):
+		initialMeanDays = 4
+		initialScalingParameter = 0.8
+		profitTarget = 2
+		stopLoss = -5
+		initTemp = 2
+		thermostat = 0.95
+		maxIter = 30
+		reannealing = 10
+		maxScore, maxScores, maxParams = simulatedAnnealing(fileName, initialMeanDays, initialScalingParameter, profitTarget, stopLoss, initTemp, thermostat, maxIter, reannealing)		
+		return maxScore, maxParams[0], maxParams[1]
+	
+	fIndexer = FileIndexer("../data/unzipped/")
+	startDate = datetime(2014,4,1)
+	endDate = datetime(2016,1,1)
+	fileList = fIndexer.getFilesForPeriod(startDate, endDate)
+	#print "File List: ", fileList
+	
+	results = np.empty((fileList.shape[0], 3))
+	#for i in np.array(fIndexer.shape[0]):
+	for i in np.arange(fileList.shape[0]):
+		maxScore, scalingParameter, meanObs = runSimulatedAnnealing(fileList[i])
+		results[i][0] = scalingParameter
+		results[i][1] = meanObs
+		results[i][2] = maxScore
+		print "Computed Result for ", fileList[i], " -- ", results[i][0], ", ", results[i][1], " -- max score: ", results[i][2]
+	
+	print "Results: ", results
+	#runSimulatedAnnealing(fileList[0])
+	#d = MRSingleDay("ZS201605_20160314.csv", 0.8, 4, 2, -5)
+	#ro = d.calc_returns()
+	#print "winning: {}, loosing: {}, profit: {}".format(ro.num_win, ro.num_loose, ro.cum_ret)
+	
+
 
 
 	print "all done boss"

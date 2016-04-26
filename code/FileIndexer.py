@@ -9,12 +9,6 @@ class FileIndexer:
 		self.fileDirectory = fileDirectory
 		
 		self.minuteFiles = np.array(os.listdir(fileDirectory))
-		#minuteDates = np.empty(minuteFiles.shape[0])
-		#for i in np.arange(minuteFiles.shape[0]):
-		#	minuteDates[i] = self.getFileDate(minuteFiles)
-		#	
-		#self.minuteDatesAndFiles = np.vstack((minuteFiles, minuteDates)).T
-		
 		self.dateconv = lambda x: datetime.strptime(x, "%Y%m%d %H:%M:%S")		
 	
 	def getFileDate(fileName):
