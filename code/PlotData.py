@@ -15,16 +15,24 @@ def plot_single_day():
     plt.show()
 
 def plot_cum_results():
-    data = []
-    fr = open("SA_results.txt")
+    data = []; cum_data = [0]
+    sum = 0
+    #fr = open("SA_winratio_results.txt")
+    fr = open("SA_avgprofit_results.txt")
+    #fr = open("SA_results.txt")
     for line in fr.readlines():
-        la = line.strip().split("\t")
-        print len(la)
+        la = line.split("\t")
+        curr_val = float(la[4])
+        data.append(curr_val)
+        cum_data.append(sum + curr_val)
 
-        #data.append(float(la[4]))
+        sum += curr_val
 
-    #plt.plot(data)
-    #plt.show()
+    plt.plot(cum_data)
+    plt.xlabel("trading day")
+    plt.ylabel("Cumulative Return ($0.01)")
+    plt.title("Cumulative Returns")
+    plt.show()
 
 if __name__ == '__main__':
     #plot_single_day()
