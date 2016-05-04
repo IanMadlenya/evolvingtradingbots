@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 DATA_DIR = "/Users/peterharrington/Documents/GitHub/evolvingtradingbots/data/min/"
+CODE_DIR = "/Users/peterharrington/Documents/GitHub/evolvingtradingbots/code/"
 
 def plot_single_day():
     """Choose a day's data and plot it"""
@@ -30,10 +31,21 @@ def plot_cum_results():
 
     plt.plot(cum_data)
     plt.xlabel("trading day")
-    plt.ylabel("Cumulative Return ($0.01)")
+    plt.ylabel("Cumulative Return ($0.01)   ")
+    plt.title("Cumulative Returns")
+    plt.show()
+
+def plot_cum_results2():
+    df = pd.read_csv(CODE_DIR + "SA_GA_cum.csv")
+
+    df["Genetic Algorithm"].plot(legend=True)
+    df["Simulated Annealing"].plot(legend=True)
+    plt.xlabel("trading day")
+    plt.ylabel("Cumulative Return ($0.01)   ")
     plt.title("Cumulative Returns")
     plt.show()
 
 if __name__ == '__main__':
     #plot_single_day()
-    plot_cum_results()
+    #plot_cum_results()
+    plot_cum_results2()
