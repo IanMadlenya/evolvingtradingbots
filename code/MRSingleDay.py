@@ -7,7 +7,9 @@ import pandas as pd
 from pandas.stats.moments import rolling_mean
 from Tools import average_true_range, snf, test_fixed_stop_target, test_fixed_bar_exit
 
-DATA_DIR = "/Users/peterharrington/Documents/GitHub/evolvingtradingbots/data/min/"
+#DATA_DIR = "/Users/peterharrington/Documents/GitHub/evolvingtradingbots/data/min/"
+#DATA_DIR = "C:/Anaconda2/evolvingtradingbots/data/unzipped/"
+DATA_DIR = "../data/unzipped/"
 
 
 class MRSingleDay():
